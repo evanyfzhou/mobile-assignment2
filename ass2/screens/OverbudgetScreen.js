@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { StyleSheet, View, FlatList, Button, Text } from 'react-native';
+import { StyleSheet, View, FlatList, Text } from 'react-native';
+import { MaterialIcons } from 'react-native-vector-icons';
 import { collection, getDocs } from '@firebase/firestore';
 import PlusButton from '../components/PlusButton';
 import { database } from '../firebase/firebaseSetup';
@@ -32,7 +33,13 @@ export default function OverbudgetScreen({ navigation }) {
             data={expenses}
             renderItem={({ item }) => (
             <View style={styles.expenseItem}>
-                <Text style={styles.expenseText}>{item.name} {item.quantity} x {item.price}</Text>
+                <Text style={styles.expenseText}>{item.name}</Text>
+                <View style={styles.warningAndCalculationContainer}>
+                    <MaterialIcons name="warning" size={24} color={colors.yellow} style={styles.warningIcon} />
+                    <View style={styles.calculationContainer}>
+                        <Text style={styles.calculationText}>{item.quantity} x {item.price}</Text>
+                    </View>
+                </View>
             </View>
             )}
             keyExtractor={(item) => item.id}
@@ -48,6 +55,9 @@ const styles = StyleSheet.create({
       backgroundColor: colors.background
     },
     expenseItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       backgroundColor: colors.purple,
       padding: spacing.large,
       marginVertical: 8,
@@ -64,6 +74,21 @@ const styles = StyleSheet.create({
     expenseText: {
       fontSize: typography.medium,
       color: colors.white
+    },
+    warningAndCalculationContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    warningIcon: {
+      marginRight: spacing.small,
+      color: colors.yellow
+    },
+    calculationContainer: {
+      backgroundColor: colors.white,
+      padding: spacing.small,
+      borderRadius: 6,
+    },
+    calculationText: {
+      color: colors.purple,
     }
-  });
-  
+});
