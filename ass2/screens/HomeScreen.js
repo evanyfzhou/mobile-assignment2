@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { StyleSheet, View, FlatList, Button, Text } from 'react-native';
+import { StyleSheet, View, FlatList, Text, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { MaterialIcons } from 'react-native-vector-icons';
 import { collection, getDocs } from '@firebase/firestore';
 import PlusButton from '../components/PlusButton';
@@ -9,14 +10,16 @@ import { colors, spacing, typography } from '../components/Theme';
 export default function HomeScreen({ navigation }) {
   const [expenses, setExpenses] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const querySnapshot = await getDocs(collection(database, 'expenses'));
-      const expensesData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-      setExpenses(expensesData);
-    };
-    fetchData();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        const querySnapshot = await getDocs(collection(database, 'expenses'));
+        const expensesData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        setExpenses(expensesData);
+      };
+      fetchData();
+    }, [])
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -28,24 +31,27 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <FlatList 
+      <FlatList
         data={expenses}
         renderItem={({ item }) => (
-          <View style={styles.expenseItem}>
-            <Text style={styles.expenseText}>{item.name}</Text>
-            <View style={styles.warningAndCalculationContainer}>
-              {item.quantity * item.price > 500 && 
-                <MaterialIcons name="warning" size={24} color={colors.red} style={styles.warningIcon} />}
-              <View style={styles.calculationContainer}>
-                <Text style={styles.calculationText}>{item.quantity} x {item.price}</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('EditScreen', { expense: item })}>
+            <View style={styles.expenseItem}>
+              <Text style={styles.expenseText}>{item.name}</Text>
+              <View style={styles.warningAndCalculationContainer}>
+                {!item.budgetMarker && item.quantity * item.price > 500 &&
+                  <MaterialIcons name="warning" size={24} color={colors.yellow} style={styles.warningIcon} />}
+                <View style={styles.calculationContainer}>
+                  <Text style={styles.calculationText}>{item.quantity} x {item.price}</Text>
+                </View>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}
       />
     </View>
   );
+
 }
 
 const styles = StyleSheet.create({

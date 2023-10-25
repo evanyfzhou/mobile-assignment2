@@ -3,11 +3,13 @@ import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'reac
 import { writeToDB } from '../firebase/firestoreHelper';
 import { colors, spacing, typography } from '../components/Theme';
 import DropDownPicker from 'react-native-dropdown-picker';
+import SaveCancelButtons from '../components/SaveCancelButtons';
 
 export default function AddExpenseScreen({ navigation }) {
   const [itemName, setItemName] = useState('');
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
+  const [budgetMarker, setBudgetMarker] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState(
@@ -15,14 +17,14 @@ export default function AddExpenseScreen({ navigation }) {
       label: `${index + 1}`,
       value: index + 1,
     }))
-  );  
+  );
 
   const handleSubmit = async () => {
     if (!itemName || !price || !quantity) {
       Alert.alert("Error", "Please fill in all fields.");
       return;
     }
-    
+
     if (isNaN(price)) {
       Alert.alert("Error", "Please enter a numeric value for price.");
       return;
@@ -32,6 +34,7 @@ export default function AddExpenseScreen({ navigation }) {
       name: itemName,
       price: parseFloat(price),
       quantity: parseInt(quantity, 10),
+      budgetMarker: budgetMarker,
     });
 
     navigation.goBack();
@@ -57,15 +60,10 @@ export default function AddExpenseScreen({ navigation }) {
           setQuantity(value);
         }}
       />
-
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.cancelButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.buttonText}>Cancel</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
-      </View>
+      <SaveCancelButtons
+        onSave={handleSubmit}
+        onCancel={() => navigation.goBack()}
+      />
     </View>
   );
 }
@@ -77,7 +75,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   label: {
-    color: colors.white,
+    color: colors.purple,
     fontSize: typography.medium,
     marginBottom: spacing.small,
   },

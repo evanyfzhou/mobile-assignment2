@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
 import AddExpenseScreen from './screens/AddExpenseScreen';
 import OverbudgetScreen from './screens/OverbudgetScreen';
+import EditScreen from './screens/EditScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { colors, spacing, typography } from './components/Theme';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,6 +30,17 @@ const HomeStack = () => {
         component={AddExpenseScreen} 
         options={{ 
           title: 'Add Expense',
+          headerTitleAlign: 'center',
+          headerStyle: { backgroundColor: colors.purple },
+          headerTintColor: colors.white,
+        }}
+      />
+      <Stack.Screen 
+        name="EditScreen" 
+        component={EditScreen} 
+        options={{ 
+          title: 'Edit',
+          headerTitleAlign: 'center',
           headerStyle: { backgroundColor: colors.purple },
           headerTintColor: colors.white,
         }}
@@ -55,6 +67,17 @@ const OverbudgetStack = () => {
         component={AddExpenseScreen} 
         options={{ 
           title: 'Add Expense',
+          headerTitleAlign: 'center',
+          headerStyle: { backgroundColor: colors.purple },
+          headerTintColor: colors.white,
+        }}
+      />
+      <Stack.Screen 
+        name="EditScreen" 
+        component={EditScreen} 
+        options={{ 
+          title: 'Edit',
+          headerTitleAlign: 'center',
           headerStyle: { backgroundColor: colors.purple },
           headerTintColor: colors.white,
         }}

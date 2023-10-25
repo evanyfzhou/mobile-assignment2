@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { StyleSheet, View, FlatList, Text } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { MaterialIcons } from 'react-native-vector-icons';
 import { collection, getDocs } from '@firebase/firestore';
 import PlusButton from '../components/PlusButton';
@@ -9,16 +10,18 @@ import { colors, spacing, typography } from '../components/Theme';
 export default function OverbudgetScreen({ navigation }) {
     const [expenses, setExpenses] = useState([]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-        const querySnapshot = await getDocs(collection(database, 'expenses'));
-        const expensesData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-        const overbudgetExpenses = expensesData.filter(expense => expense.price * expense.quantity > 500);
-        setExpenses(overbudgetExpenses);
-        };
-        fetchData();
-    }, []);
-
+    useFocusEffect(
+        React.useCallback(() => {
+            const fetchData = async () => {
+                const querySnapshot = await getDocs(collection(database, 'expenses'));
+                const expensesData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+                const overbudgetExpenses = expensesData.filter(expense => !expense.budgetMarker && expense.price * expense.quantity > 500);
+                setExpenses(overbudgetExpenses);
+            };
+            fetchData();
+        }, [])
+    );
+    
     useLayoutEffect(() => {
         navigation.setOptions({
         headerRight: () => (
